@@ -1,0 +1,157 @@
++-----------+---------------+----------------+-----------+-------------+------------+-------------------+-----------+------------------+
+| member_id | member_name   | member_address | dinner_id | dinner_date | venue_code | venue_description | food_code | food_description |
++-----------+---------------+----------------+-----------+-------------+------------+-------------------+-----------+------------------+
+|         1 | Amit          | 325 Max park   | D00001001 | 2020-03-15  | B01        | Grand Ball Room   | C1, C2    | Curry, Cake      |
+|         2 | Ben           | 24 Hudson lane | D00001002 | 2020-03-15  | B02        | Zoku Roof Top     | S1, C2    | Soup, Cake       |
+|         3 | Cristina      | 516 6th Ave    | D00001002 | 2020-03-15  | B02        | Zoku Roof Top     | S1, C2    | Soup, Cake       |
+|         4 | Dan           | 89 John St     | D00001003 | 2020-03-20  | B03        | Goat Farm         | P1, T1, M1| Pie, Tea, Mousse |
+|         5 | Ema           | 91 Pixar St    | D00001003 | 2020-03-20  | B03        | Goat Farm         | P1, T1, M1| Pie, Tea, Mousse |
+|         6 | Fatima        | 56 8th Ave     | D00001004 | 2020-03-20  | B04        | Mama's Kitchen    | F1, M1    | Falafal, Mousse  |
+|         7 | Gabor         | 54 Vivaldi St  | D00001005 | 2020-02-20  | B05        | Hungry Hungary    | G1, P2    | Goulash, Pasca   |
+|         8 | Hema          | 9 Peter St     | D00001003 | 2020-03-20  | B03        | Goat Farm         | P1, T1, M1| Pie, Tea, Mousse |
++-----------+---------------+----------------+-----------+-------------+------------+-------------------+-----------+------------------+
+
+
+Q1- How can you convert the table into 1NF ?
+
+food_code and food_description has multiple values which is against to first rule of the 1NF.
+So we should simplify it until every column has atomic values.
+
+
++-----------+---------------+----------------+-----------+-------------+------------+-------------------+-----------+------------------+
+| member_id | member_name   | member_address | dinner_id | dinner_date | venue_code | venue_description | food_code | food_description |
++-----------+---------------+----------------+-----------+-------------+------------+-------------------+-----------+------------------+
+|         1 | Amit          | 325 Max park   | D00001001 | 2020-03-15  | B01        | Grand Ball Room   | C1        | Curry            |
+|         1 | Amit          | 325 Max park   | D00001001 | 2020-03-15  | B01        | Grand Ball Room   | C2        | Cake             |
+|         2 | Ben           | 24 Hudson lane | D00001002 | 2020-03-15  | B02        | Zoku Roof Top     | S1        | Soup             |
+|         2 | Ben           | 24 Hudson lane | D00001002 | 2020-03-15  | B02        | Zoku Roof Top     | C2        | Cake             |
+|         3 | Cristina      | 516 6th Ave    | D00001002 | 2020-03-15  | B02        | Zoku Roof Top     | S1        | Soup             |
+|         3 | Cristina      | 516 6th Ave    | D00001002 | 2020-03-15  | B02        | Zoku Roof Top     | C2        | Cake             |
+|         4 | Dan           | 89 John St     | D00001003 | 2020-03-20  | B03        | Goat Farm         | P1        | Pie              |
+|         4 | Dan           | 89 John St     | D00001003 | 2020-03-20  | B03        | Goat Farm         | T1        | Tea              |
+|         4 | Dan           | 89 John St     | D00001003 | 2020-03-20  | B03        | Goat Farm         | M1        | Mousse           |
+|        it will be like this.......                                                                                                   |
++-----------+---------------+----------------+-----------+-------------+------------+-------------------+-----------+------------------+
+
+Q2- What are the super, candidate, primary keys ?
+
+Super Keys --> SK1 = { member_id, member_name, member_address, dinner_id, venue_code,  food_code, food_description}
+               SK2 = { member_id, member_name, food_code, food_description}
+               SK3 = { member_id, member_address, food_description}
+
+Candidate Keys --> CK1 = { member_name, food_code } 
+                   CK2 = { member_address, food_code }
+                   CK3 = { member_id, food_code }   *
+                   CK4 = { member_id, food_description}   *
+                   CK5 = { member_address, food_description}
+
+Primary Key  Composite of (member_id + food_code)
+
+Q3- What are the potential relationships between different possible tables ?
+      member_id  --> member_name, member_address 
+      venue_code --> venue_description
+      food_code  --> food_description
+      dinner_id --> dinner_date
+      member_id, food_code, dinner_id, venue_code
+
+      The relationships between tables is "many-to-many"
+Q4- How can you develop the set of 2NF tables?
+    There are different candidate keys that described above. If we pick up the CK3 ({ member_id, food_code }) and apply 2NF rule,
+    (2NF: no non-prime attribute should be functionally dependent on any proper subset of a candidate key) 
+    1- member_name and  member_address are functionally dependent on member_id
+    2- food_description is functionally dependent on food_code
+
++-----------+-----------+-------------+------------+-------------------+-----------+
+| member_id | dinner_id | dinner_date | venue_code | venue_description | food_code |
++-----------+-----------+-------------+------------+-------------------+-----------+
+|         1 | D00001001 | 2020-03-15  | B01        | Grand Ball Room   | C1        |
+|         1 | D00001001 | 2020-03-15  | B01        | Grand Ball Room   | C2        |
+|         2 | D00001002 | 2020-03-15  | B02        | Zoku Roof Top     | S1        |
+|         2 | D00001002 | 2020-03-15  | B02        | Zoku Roof Top     | C2        |
+|         3 | D00001002 | 2020-03-15  | B02        | Zoku Roof Top     | S1        |
+|         3 | D00001002 | 2020-03-15  | B02        | Zoku Roof Top     | C2        |
+|         4 | D00001003 | 2020-03-20  | B03        | Goat Farm         | P1        |
+|         4 | D00001003 | 2020-03-20  | B03        | Goat Farm         | T1        |
+|         4 | D00001003 | 2020-03-20  | B03        | Goat Farm         | M1        |
+|                                                                                  |  
++-----------+-----------+-------------+------------+-------------------+-----------+
+
+Members:
++-----------+---------------+----------------+       
+| member_id | member_name   | member_address |
++-----------+---------------+----------------+
+|         1 | Amit          | 325 Max park   |
+|         1 | Amit          | 325 Max park   |
+|         2 | Ben           | 24 Hudson lane |
+|         2 | Ben           | 24 Hudson lane |
+|         3 | Cristina      | 516 6th Ave    |
+|         3 | Cristina      | 516 6th Ave    |
+|         4 | Dan           | 89 John St     |
+|         4 | Dan           | 89 John St     |
+|         4 | Dan           | 89 John St     |
++-----------+---------------+----------------+
+
+Food:
++-----------+------------------+
+| food_code | food_description |
++-----------+------------------+
+| C1        | Curry            |
+| C2        | Cake             |
+| S1        | Soup             |
+| C2        | Cake             |
+| S1        | Soup             |
+| C2        | Cake             |
+| P1        | Pie              |
+| T1        | Tea              |
+| M1        | Mousse           |
++-----------+------------------
+
+Q5- How can you develop the set of 3NF tables?
+ 3NF: (No transitive dependency (i.e. no field should depend on non-key attributes))
+ 1- dinner_id is a non-key attribute since dinner_date depend on dinner_id it should be stored on another table
+ 2- venue_code is a non-key attribute since venue_description depend on venue_code it should be stored on another table
+
+Relation Table
++-----------+-----------+------------+-----------+
+| member_id | dinner_id | venue_code | food_code |
++-----------+-----------+------------+-----------+
+|         1 | D00001001 | B01        | C1        |
+|         1 | D00001001 | B01        | C2        |
+|         2 | D00001002 | B02        | S1        |
+|         2 | D00001002 | B02        | C2        |
+|         3 | D00001002 | B02        | S1        |
+|         3 | D00001002 | B02        | C2        |
+|         4 | D00001003 | B03        | P1        |
+|         4 | D00001003 | B03        | T1        |
+|         4 | D00001003 | B03        | M1        |  
++-----------+-----------+------------+-----------+
+
+Dinner:
++-----------+-------------+
+| dinner_id | dinner_date |
++-----------+-------------+
+| D00001001 | 2020-03-15  |
+| D00001001 | 2020-03-15  |
+| D00001002 | 2020-03-15  |
+| D00001002 | 2020-03-15  |
+| D00001002 | 2020-03-15  |
+| D00001002 | 2020-03-15  |
+| D00001003 | 2020-03-20  |
+| D00001003 | 2020-03-20  |
+| D00001003 | 2020-03-20  |
++-----------+-------------+
+
+Venue:
++------------+-------------------+
+| venue_code | venue_description |
++------------+-------------------+
+| B01        | Grand Ball Room   |
+| B01        | Grand Ball Room   |
+| B02        | Zoku Roof Top     |
+| B02        | Zoku Roof Top     |
+| B02        | Zoku Roof Top     |
+| B02        | Zoku Roof Top     |
+| B03        | Goat Farm         |
+| B03        | Goat Farm         |
+| B03        | Goat Farm         |
++------------+-------------------+

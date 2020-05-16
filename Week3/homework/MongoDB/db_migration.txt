@@ -1,0 +1,18 @@
+1- Insert records to mysql wıth using world.sql script:
+
+  mysql -u your_username -p your_password
+  source <path_to_sql_file>/world.sql
+
+2- Data migration from mysql to mongo:
+
+  2.1- Data export from mysql:
+    select * into outfile 'city.csv' FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n' from city;
+
+    select * into outfile 'country.csv' FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n' from country;
+
+    select * into outfile 'countrylanguage.csv' FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n' from countrylanguage;
+
+  2.2: Import data from csv to mongodb
+       mongoimport --db new_world --collection city --file city.csv --type csv --headerline
+       mongoimport --db new_world --collection country --file country.csv --type csv --headerline
+       mongoimport --db new_world --collection countrylanguage --file countrylanguage.csv --type csv --headerline
